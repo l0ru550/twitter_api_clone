@@ -1,0 +1,32 @@
+version: "3.8"
+
+x-pg-env: &pg-env
+  POSTGRES_USER: &pg-user ${POSTGRES_USER:-test}
+  POSTGRES_PASSWORD: &pg-psw ${POSTGRES_PASSWORD:-}
+  POSTGRES_DB: &pg-db ${POSTGRES_DB:-test}
+  POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD:-trust}
+
+x-network: &network
+  networks:
+    - twitter
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    restart: always
+    environment:
+      <<: *pg-env
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./postgresql.conf:/etc/postgresql.conf
+    <<: *network
+
+volumes:
+  postgres:
+
+networks:
+  twitter:
+    name: twitter
