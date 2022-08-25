@@ -1,25 +1,9 @@
 const express = require('express');
 const { follower: followerController } = require("../controllers");
 const validate = require('../validate');
+const authentication = require('../authentication');
 const { param } = require('express-validator');
-const config = require('../config')
-const jwt = require('jsonwebtoken');
 const follower = express.Router();
-
-function authentication(request, response, next) {
-    const bearerHeader = request.headers['authorization'];
-    if (typeof bearerHeader !== 'undefined') {
-        const bearerToken = bearerHeader.split(' ')[1]
-        try {
-            const authData = jwt.verify(bearerToken, config.secret);
-            request.authorization = authData;
-            request.token = bearerToken;
-            next();
-        } catch (error) {
-            response.sendStatus(401);
-        }
-    }
-};
 
 
 /**
@@ -44,7 +28,7 @@ function authentication(request, response, next) {
  *                  following_id:
  *                     type: integer
  */
-follower.get('/', async (request, response) => {
+follower.get('/followers', async (request, response) => {
     try {
         const follows = await followerController.getFollow();
         response.json(follows);
@@ -136,7 +120,7 @@ follower.get('/users/:id/followings',
 
 /**
  * @openapi
- * /user/{id}/followers:
+ * /users/{id}/followers:
  *   post:
  *     description: Follow Up.
  *     tags:
@@ -174,7 +158,7 @@ follower.post('/users/:id/followers', authentication,
     validate([param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const follower = await followerController.followUp(request.params.id, request.token);
+            const follower = await followerController.followUp(request.params.id, request.authorization.user.id);
             response.json(follower);
         } catch (error) {
             request.log.error(error);
@@ -222,7 +206,7 @@ follower.delete('/followers/:id', authentication,
     validate([param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const follower = await followerController.unFollow(request.params.id, request.token);
+            const follower = await followerController.unFollow(request.params.id, request.authorization.user.id);
             response.json(follower);
         } catch (error) {
             request.log.error(error);

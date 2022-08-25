@@ -74,15 +74,13 @@ const forgetReset = async (body, token) => {
     return res.rows[0];
 };
 
-const updateUser = async (token, newUser) => {
-    const email = jwt.decode(token).user.email;
+const updateUser = async (email, newUser) => {
     const query = 'UPDATE users SET username=$1, first_name=$2, last_name=$3, age=$4, email=$5, update_at=NOW() WHERE email=$6 RETURNING *';
     const res = await pool.query(query, [newUser.username, newUser.first_name, newUser.last_name, newUser.age, newUser.email, email]);
     return res.rows[0];
 };
 
-const deleteUser = async (token) => {
-    const email = jwt.decode(token).user.email;
+const deleteUser = async (email) => {
     const query = 'UPDATE users SET delete_at=NOW() WHERE email=$1 RETURNING *';
     const res = await pool.query(query, [email]);
     return res.rows[0];

@@ -1,25 +1,10 @@
 const express = require('express');
 const { tweet: tweetController } = require("../controllers");
 const validate = require('../validate');
+const authentication = require('../authentication');
 const { body, param } = require('express-validator');
-const config = require('../config')
-const jwt = require('jsonwebtoken');
 const tweet = express.Router();
 
-function authentication(request, response, next) {
-    const bearerHeader = request.headers['authorization'];
-    if (typeof bearerHeader !== 'undefined') {
-        const bearerToken = bearerHeader.split(' ')[1]
-        try {
-            const authData = jwt.verify(bearerToken, config.secret);
-            request.authorization = authData;
-            request.token = bearerToken;
-            next();
-        } catch (error) {
-            response.sendStatus(401);
-        }
-    }
-};
 
 /**
  * @openapi
@@ -143,7 +128,7 @@ tweet.get('/tweets/:id/tweets',
 
 /**
  * @openapi
- * /users/tweets:
+ * /tweets:
  *   post:
  *     description: Tweet.
  *     tags:
@@ -185,14 +170,14 @@ tweet.get('/tweets/:id/tweets',
  *              schema: 
  *                type: string
  */
-tweet.post('/users/tweets', authentication, validate([
+tweet.post('/tweets', authentication, validate([
     body('user_id').isLength({ max: 30 }),
     body('text').isLength({ max: 500 }),
     body('photo').isURL().optional({ nullable: true }),
 ]),
     async (request, response) => {
         try {
-            const tweet = await tweetController.createTweet(request.body, request.token);
+            const tweet = await tweetController.createTweet(request.body, request.authorization.user.id);
             response.json(tweet);
         } catch (error) {
             request.log.error(error);
@@ -269,7 +254,7 @@ tweet.put('/tweets/:id', authentication, validate([
             } else {
                 newTweet.photo = tweet.photo;
             }
-            tweet = await tweetController.updateTweet(request.token, newTweet);
+            tweet = await tweetController.updateTweet(request.authorization.user.id, newTweet);
             response.json(tweet);
         } catch (error) {
             request.log.error(error);
@@ -319,7 +304,7 @@ tweet.delete('/tweets/:id', authentication, validate([
     param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const tweet = await tweetController.deleteTweet(request.params.id, request.token);
+            const tweet = await tweetController.deleteTweet(request.authorization.user.id, request.token);
             response.json(tweet);
         } catch (error) {
             request.log.error(error);

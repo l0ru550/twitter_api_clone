@@ -1,27 +1,9 @@
 const express = require('express');
 const { user: userController } = require("../controllers");
 const validate = require('../validate');
+const authentication = require('../authentication');
 const { body } = require('express-validator');
-const config = require('../config')
-const jwt = require('jsonwebtoken');
 const user = express.Router();
-
-async function authentication(request, response, next) {
-    const bearerHeader = request.headers['authorization'];
-    if (typeof bearerHeader !== 'undefined') {
-        const bearerToken = bearerHeader.split(' ')[1]
-        try {
-            const authData = jwt.verify(bearerToken, config.secret);
-            request.authorization = authData;
-            request.token = bearerToken;
-            await userController.getUserByEmail(authData.user.email);
-            next();
-        } catch (error) {
-            console.log("error", error);
-            response.sendStatus(401);
-        }
-    }
-};
 
 
 /**
@@ -139,53 +121,6 @@ user.post('/signup', validate([
         }
     });
 
-
-/**
-* @openapi
-* /users/profile:
-*   post:
-*     description: Authentication.
-*     tags:
-*      - User
-*     produces:
-*       - application/json
-*     security:
-*      - bearerAuth: []      
-*     responses:
-*       200:
-*        description: Login.
-*        content:
-*          application/json:
-*             schema: 
-*                type: object
-*                properties:
-*                  id:
-*                     type: integer
-*                  username:
-*                     type: string
-*                  first_name:
-*                     type: string
-*                  last_name:
-*                     type: string
-*                  age:
-*                     type: integer
-*                  email:
-*                     type: string
-*       401:
-*          description: Unauthorized.
-*          content:
-*            application/json:
-*              schema: 
-*                type: string
-*/
-user.post('/profile', authentication, (request, response) => {
-    try {
-        response.json(request.authorization);
-    } catch (error) {
-        request.log.error(error);
-        response.end(JSON.stringify(error)).status(500);
-    }
-});
 
 /**
  * @openapi
@@ -538,7 +473,7 @@ user.put('/', authentication, validate([
             } else {
                 newUser.email = user.email;
             }
-            user = await userController.updateUser(request.token, newUser);
+            user = await userController.updateUser(request.authorization.user.email, newUser);
             response.json(user);
         } catch (error) {
             request.log.error(error);
@@ -587,7 +522,7 @@ user.put('/', authentication, validate([
  */
 user.delete('/', authentication, async (request, response) => {
     try {
-        const user = await userController.deleteUser(request.token);
+        const user = await userController.deleteUser(request.authorization.user.email);
         response.json(user);
     } catch (error) {
         request.log.error(error);

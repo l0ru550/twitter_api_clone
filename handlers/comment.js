@@ -1,25 +1,9 @@
 const express = require('express');
 const { comment: commentController } = require("../controllers");
 const validate = require('../validate');
+const authentication = require('../authentication');
 const { body, param } = require('express-validator');
-const config = require('../config')
-const jwt = require('jsonwebtoken');
 const comment = express.Router();
-
-function authentication(request, response, next) {
-    const bearerHeader = request.headers['authorization'];
-    if (typeof bearerHeader !== 'undefined') {
-        const bearerToken = bearerHeader.split(' ')[1]
-        try {
-            const authData = jwt.verify(bearerToken, config.secret);
-            request.authorization = authData;
-            request.token = bearerToken;
-            next();
-        } catch (error) {
-            response.sendStatus(401);
-        }
-    }
-};
 
 
 /**
@@ -128,17 +112,17 @@ comment.get('comments/:id',
  *                  text:
  *                     type: string
  */
- comment.get('/tweets/:id/comments',
- validate([param('id').isInt({ min: 1 })]),
- async (request, response) => {
-     try {
-         const comments = await commentController.getCommentsByTweet(request.params.id);
-         response.json(comments);
-     } catch (error) {
-         request.log.error(error);
-         response.end(JSON.stringify(error)).status(500);
-     }
- });
+comment.get('/tweets/:id/comments',
+    validate([param('id').isInt({ min: 1 })]),
+    async (request, response) => {
+        try {
+            const comments = await commentController.getCommentsByTweet(request.params.id);
+            response.json(comments);
+        } catch (error) {
+            request.log.error(error);
+            response.end(JSON.stringify(error)).status(500);
+        }
+    });
 
 /**
 * @openapi
@@ -236,7 +220,7 @@ comment.post('/tweets/:id/comments', authentication, validate([
 ]),
     async (request, response) => {
         try {
-            const comment = await commentController.createComment(request.token, request.params.id, request.body);
+            const comment = await commentController.createComment(request.authorization.user.id, request.params.id, request.body);
             response.json(comment);
         } catch (error) {
             request.log.error(error);
@@ -292,7 +276,7 @@ comment.post('/tweets/:id/comments', authentication, validate([
  *              schema: 
  *                type: string
  */
- comment.put('/comments/:id', authentication, validate([
+comment.put('/comments/:id', authentication, validate([
     param('id').isInt({ min: 1 }),
     body('text').isLength({ max: 500 })
 ]),
@@ -305,7 +289,7 @@ comment.post('/tweets/:id/comments', authentication, validate([
             } else {
                 newComment.text = comment.text;
             }
-            comment = await commentController.updateComment(newComment, request.token, request.params.id);
+            comment = await commentController.updateComment(newComment, request.params.id);
             response.json(comment);
         } catch (error) {
             request.log.error(error);
@@ -351,11 +335,11 @@ comment.post('/tweets/:id/comments', authentication, validate([
  *              schema: 
  *                type: string
  */
- comment.delete('/comments/:id', authentication, validate([
+comment.delete('/comments/:id', authentication, validate([
     param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const comment = await commentController.deleteComment(request.params.id, request.token);
+            const comment = await commentController.deleteComment(request.params.id, request.authorization.user.id);
             response.json(comment);
         } catch (error) {
             request.log.error(error);

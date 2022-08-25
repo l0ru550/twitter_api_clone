@@ -20,17 +20,15 @@ const getFollowings = async (id) => {
     return res.rows;
 };
 
-const followUp = async (id, token) => {
-    const follower_id = jwt.decode(token).user.id;
+const followUp = async (id, user_id) => {
     const query = 'INSERT INTO follower (follower_id, following_id, created_at) VALUES($1, $2, now()) RETURNING *';
-    const res = await pool.query(query, [follower_id, id]);
+    const res = await pool.query(query, [user_id, id]);
     return res.rows[0];
 };
 
-const unFollow = async (id, token) => {
-    const follower_id = jwt.decode(token).user.id;
+const unFollow = async (id, user_id) => {
     const query = 'UPDATE follower SET delete_at=NOW() WHERE follower_id=$1 AND following_id=$2 RETURNING *';
-    const res = await pool.query(query, [follower_id, id]);
+    const res = await pool.query(query, [user_id, id]);
     return res.rows[0];
 };
 

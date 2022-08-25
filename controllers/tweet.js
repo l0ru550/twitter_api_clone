@@ -20,22 +20,19 @@ const getTweetByUser = async (id) => {
     return res.rows;
 };
 
-const createTweet = async (body, token) => {
-    const user_id = jwt.decode(token).user.id;
+const createTweet = async (body, user_id) => {
     const query = 'INSERT INTO tweet (user_id, text, photo, created_at) VALUES($1, $2, $3, now()) RETURNING *';
     const res = await pool.query(query, [user_id, body.text, body.photo]);
     return res.rows;
 };
 
-const updateTweet = async (token, newTweet) => {
-    const user_id = jwt.decode(token).user.id;
+const updateTweet = async (user_id, newTweet) => {
     const query = 'UPDATE tweet SET text=$1, photo=$2, update_at=NOW() WHERE user_id=$3 RETURNING *';
     const res = await pool.query(query, [newTweet.text, newTweet.photo, user_id]);
     return res.rows;
 };
 
-const deleteTweet = async (id, token) => {
-    const user_id = jwt.decode(token).user.id;
+const deleteTweet = async (id, user_id) => {
     const query = 'UPDATE tweet SET delete_at=NOW() WHERE user_id=$1 AND id=$2 RETURNING *'
     const res = await pool.query(query, [user_id, id]);
     return res.rows[0];
