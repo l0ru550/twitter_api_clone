@@ -32,9 +32,9 @@ const updateTweet = async (user_id, newTweet) => {
     return res.rows;
 };
 
-const deleteTweet = async (id, user_id) => {
-    const query = 'UPDATE tweet SET delete_at=NOW() WHERE user_id=$1 AND id=$2 RETURNING *'
-    const res = await pool.query(query, [user_id, id]);
+const deleteTweet = async (id) => {
+    const query = 'UPDATE tweet SET delete_at=NOW() WHERE id=$1 RETURNING *'
+    const res = await pool.query(query, [id]);
     return res.rows[0];
 };
 

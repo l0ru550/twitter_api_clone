@@ -1,7 +1,6 @@
 const express = require('express');
 const { tweet: tweetController } = require("../controllers");
-const validate = require('../validate');
-const authentication = require('../authentication');
+const { validate, authentication } = require('../authentication');
 const { body, param } = require('express-validator');
 const tweet = express.Router();
 
@@ -304,7 +303,7 @@ tweet.delete('/tweets/:id', authentication, validate([
     param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const tweet = await tweetController.deleteTweet(request.authorization.user.id, request.token);
+            const tweet = await tweetController.deleteTweet(request.params.id);
             response.json(tweet);
         } catch (error) {
             request.log.error(error);

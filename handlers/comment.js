@@ -1,7 +1,6 @@
 const express = require('express');
 const { comment: commentController } = require("../controllers");
-const validate = require('../validate');
-const authentication = require('../authentication');
+const { validate, authentication } = require('../authentication');
 const { body, param } = require('express-validator');
 const comment = express.Router();
 
@@ -339,7 +338,7 @@ comment.delete('/comments/:id', authentication, validate([
     param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const comment = await commentController.deleteComment(request.params.id, request.authorization.user.id);
+            const comment = await commentController.deleteComment(request.params.id);
             response.json(comment);
         } catch (error) {
             request.log.error(error);

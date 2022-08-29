@@ -38,9 +38,9 @@ const updateComment = async (newComment, id) => {
     return res.rows;
 };
 
-const deleteComment = async (id, user_id) => {
-    const query = 'UPDATE comment SET delete_at=NOW() WHERE user_id=$1 AND id=$2 RETURNING *'
-    const res = await pool.query(query, [user_id, id]);
+const deleteComment = async (id) => {
+    const query = 'UPDATE comment SET delete_at=NOW() WHERE id=$1 RETURNING *'
+    const res = await pool.query(query, [id]);
     return res.rows[0];
 };
 

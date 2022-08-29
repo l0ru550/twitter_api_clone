@@ -1,8 +1,7 @@
 const express = require('express');
 const { follower: followerController } = require("../controllers");
-const validate = require('../validate');
-const authentication = require('../authentication');
-const { param } = require('express-validator');
+const { validate, authentication } = require('../authentication');
+const { body, param } = require('express-validator');
 const follower = express.Router();
 
 
@@ -118,11 +117,12 @@ follower.get('/users/:id/followings',
         }
     });
 
+
 /**
  * @openapi
  * /users/{id}/followers:
- *   post:
- *     description: Follow Up.
+ *   delete:
+ *     description: Follow up someone.
  *     tags:
  *      - Follower
  *     parameters:
@@ -135,10 +135,10 @@ follower.get('/users/:id/followings',
  *      - bearerAuth: [] 
  *     responses:
  *       200:
- *        description: Follow Up.
- *        content:
- *          application/json:
- *             schema: 
+ *         description: Follow up someone.
+ *         content:
+ *           application/json:
+ *              schema: 
  *                type: object
  *                properties:
  *                  id:
@@ -148,17 +148,19 @@ follower.get('/users/:id/followings',
  *                  following_id:
  *                     type: integer
  *       404:
- *          description: Impossible to complete follow up.
+ *          description: Impossible to follow up.
  *          content:
  *            application/json:
  *              schema: 
  *                type: string
  */
-follower.post('/users/:id/followers', authentication,
-    validate([param('id').isInt({ min: 1 })]),
+follower.post('/users/:id/followers', authentication, validate([
+    param('id').isInt({ min: 1 }),
+    body('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const follower = await followerController.followUp(request.params.id, request.authorization.user.id);
+            console.log('params.id', request.params.id);
+            const follower = await followerController.followUp(request.params.id, request.body.id);
             response.json(follower);
         } catch (error) {
             request.log.error(error);
@@ -168,7 +170,7 @@ follower.post('/users/:id/followers', authentication,
 
 /**
  * @openapi
- * /followers/{id}:
+ * /users/{id}/followers/{following_id}:
  *   delete:
  *     description: Stop to follow someone.
  *     tags:
@@ -177,6 +179,11 @@ follower.post('/users/:id/followers', authentication,
  *       - in: path
  *         name: id
  *         description: user id
+ *         schema:
+ *          type: integer
+ *       - in: path
+ *         name: following_id
+ *         description: following id
  *         schema:
  *          type: integer
  *     security:
@@ -202,11 +209,12 @@ follower.post('/users/:id/followers', authentication,
  *              schema: 
  *                type: string
  */
-follower.delete('/followers/:id', authentication,
-    validate([param('id').isInt({ min: 1 })]),
+follower.delete('/users/:id/followers/:following_id', authentication, validate([
+    param('id').isInt({ min: 1 }),
+    param('following_id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const follower = await followerController.unFollow(request.params.id, request.authorization.user.id);
+            const follower = await followerController.unFollow(request.params.id, request.params.following_id);
             response.json(follower);
         } catch (error) {
             request.log.error(error);

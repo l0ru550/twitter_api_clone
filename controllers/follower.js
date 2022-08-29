@@ -1,5 +1,4 @@
-const pool = require("../db");
-const jwt = require('jsonwebtoken');
+const pool = require("../db")
 
 
 const getFollow = async () => {
@@ -20,13 +19,13 @@ const getFollowings = async (id) => {
     return res.rows;
 };
 
-const followUp = async (id, user_id) => {
+const followUp = async (user_id, id) => {
     const query = 'INSERT INTO follower (follower_id, following_id, created_at) VALUES($1, $2, now()) RETURNING *';
     const res = await pool.query(query, [user_id, id]);
     return res.rows[0];
 };
 
-const unFollow = async (id, user_id) => {
+const unFollow = async (user_id, id) => {
     const query = 'UPDATE follower SET delete_at=NOW() WHERE follower_id=$1 AND following_id=$2 RETURNING *';
     const res = await pool.query(query, [user_id, id]);
     return res.rows[0];
