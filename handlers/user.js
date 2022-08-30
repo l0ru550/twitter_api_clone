@@ -188,7 +188,7 @@ user.post('/login', validate([
 
 /**
  * @openapi
- * /users/resetPassword:
+ * /users/reset:
  *   post:
  *     description: Reset password.
  *     tags:
@@ -236,7 +236,7 @@ user.post('/login', validate([
  *              schema: 
  *                type: string
  */
-user.post('/resetPassword', authentication, validate([
+user.post('/reset', authentication, validate([
     body('email').isLength({ max: 60 }),
     body('old_password').isLength({ max: 30 }),
     body('new_password').isLength({ max: 30 })
@@ -320,7 +320,7 @@ user.post('/forgetPassword', validate([
 
 /**
  * @openapi
- * /users/forget/reset:
+ * /users/forget:
  *   post:
  *     description: Reset Password.
  *     tags:
@@ -364,7 +364,7 @@ user.post('/forgetPassword', validate([
  *              schema: 
  *                type: string
  */
-user.post('/forget/reset', authentication, validate([
+user.post('/forget', authentication, validate([
     body('new_password').isLength({ max: 30 })
 ]),
     async (request, response) => {

@@ -29,7 +29,7 @@ const follower = express.Router();
  */
 follower.get('/followers', async (request, response) => {
     try {
-        const follows = await followerController.getFollow();
+        const follows = await followerController.getFollows();
         response.json(follows);
     } catch (error) {
         request.log.error(error);
@@ -69,7 +69,7 @@ follower.get('/users/:id/followers',
     validate([param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const follower = await followerController.getFollowers(request.params.id);
+            const follower = await followerController.getUserFollowers(request.params.id);
             response.json(follower);
         } catch (error) {
             request.log.error(error);

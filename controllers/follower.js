@@ -1,13 +1,13 @@
 const pool = require("../db")
 
 
-const getFollow = async () => {
+const getFollows = async () => {
     const query = 'SELECT * FROM follower WHERE delete_at is NULL';
     const res = await pool.query(query);
     return res.rows;
 };
 
-const getFollowers = async (id) => {
+const getUserFollowers = async (id) => {
     const query = 'SELECT * FROM follower WHERE following_id = $1';
     const res = await pool.query(query, [id]);
     return res.rows;
@@ -32,4 +32,4 @@ const unFollow = async (user_id, id) => {
 };
 
 
-module.exports = { getFollow, getFollowers, getFollowings, followUp, unFollow };
+module.exports = { getFollows, getUserFollowers, getFollowings, followUp, unFollow };

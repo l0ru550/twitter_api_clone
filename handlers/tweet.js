@@ -42,7 +42,7 @@ tweet.get('/tweets', async (request, response) => {
 
 /**
  * @openapi
- * /tweets/{id}/tweet:
+ * /tweets/{id}:
  *   get:
  *     description: Returns a specific tweet.
  *     tags:
@@ -70,7 +70,7 @@ tweet.get('/tweets', async (request, response) => {
  *                  photo:
  *                     type: string
  */
-tweet.get('/tweets/:id/tweet',
+tweet.get('/tweets/:id',
     validate([param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
