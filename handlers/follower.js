@@ -1,6 +1,6 @@
 const express = require('express');
 const { follower: followerController } = require("../controllers");
-const { validate, authentication } = require('../authentication');
+const { validate, authentication } = require('../middlewares');
 const { body, param } = require('express-validator');
 const follower = express.Router();
 
@@ -121,7 +121,7 @@ follower.get('/users/:id/followings',
 /**
  * @openapi
  * /users/{id}/followers:
- *   delete:
+ *   post:
  *     description: Follow up someone.
  *     tags:
  *      - Follower
@@ -159,7 +159,6 @@ follower.post('/users/:id/followers', authentication, validate([
     body('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            console.log('params.id', request.params.id);
             const follower = await followerController.followUp(request.params.id, request.body.id);
             response.json(follower);
         } catch (error) {
