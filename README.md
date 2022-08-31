@@ -1,10 +1,10 @@
 # Twitter API Clone
 
-Reproducing the operation of twitter, including users who can follow other users, be followed, can create tweets and comment on them.
+Reproducing the functionalities of twitter, including users who can follow other users, be followed, can create tweets and comment on them.
 
 ## Development
 
-First, run the development server:
+First, install the dependencies:
 
 ```bash
 npm i
@@ -17,4 +17,4 @@ node index.js | pino-pretty
 
 ## Docs
 
-Open http://localhost:3000/api-docs/#/ with your browser to see the result.
+Open [http://localhost:3000/api-docs/#/](http://localhost:3000/api-docs/#/) with your browser to see the result.
