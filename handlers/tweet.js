@@ -84,7 +84,7 @@ tweet.get('/tweets/:id',
 
 /**
  * @openapi
- * /tweets/{id}/tweets:
+ * /users/{id}/tweets:
  *   get:
  *     description: Returns all tweets by a specific user.
  *     tags:
@@ -112,7 +112,7 @@ tweet.get('/tweets/:id',
  *                  photo:
  *                     type: string
  */
-tweet.get('/tweets/:id/tweets',
+tweet.get('/users/:id/tweets',
     validate([param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
