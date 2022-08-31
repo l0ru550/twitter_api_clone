@@ -1,6 +1,6 @@
 const express = require('express');
 const { comment: commentController } = require("../controllers");
-const { validate, authentication } = require('../authentication');
+const { validate, authentication } = require('../middlewares');
 const { body, param } = require('express-validator');
 const comment = express.Router();
 
