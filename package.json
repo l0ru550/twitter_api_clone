@@ -1,7 +1,6 @@
 {
   "name": "api_twitterclone",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,5 +20,14 @@
     "pino-http": "^8.1.1",
     "swagger-jsdoc": "^6.2.1",
     "swagger-ui-express": "^4.5.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/l0ru550/twitter_api_clone.git"
+  },
+  "bugs": {
+    "url": "https://github.com/l0ru550/twitter_api_clone/issues"
+  },
+  "homepage": "https://github.com/l0ru550/twitter_api_clone#readme",
+  "description": ""
 }
