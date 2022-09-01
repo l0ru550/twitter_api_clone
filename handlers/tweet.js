@@ -116,7 +116,7 @@ tweet.get('/users/:id/tweets',
     validate([param('id').isInt({ min: 1 })]),
     async (request, response) => {
         try {
-            const tweets = await tweetController.getTweetByUser(request.params.id);
+            const tweets = await tweetController.getTweetsByUser(request.params.id);
             response.json(tweets);
         } catch (error) {
             request.log.error(error);
