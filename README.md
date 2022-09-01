@@ -10,7 +10,7 @@ First, install the dependencies:
 npm i
 ```
 
-You have to fill out the file .env.example.
+You have to fill out the .env file.
 
 To run the database:
 
