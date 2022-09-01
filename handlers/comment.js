@@ -28,6 +28,8 @@ const comment = express.Router();
  *                     type: integer
  *                  text:
  *                     type: string
+ *                  photo:
+ *                     type: string
  */
 comment.get('/comments', async (request, response) => {
     try {
@@ -67,6 +69,8 @@ comment.get('/comments', async (request, response) => {
  *                  tweet_id:
  *                     type: integer
  *                  text:
+ *                     type: string
+ *                  photo:
  *                     type: string
  */
 comment.get('comments/:id',
@@ -110,6 +114,8 @@ comment.get('comments/:id',
  *                     type: integer
  *                  text:
  *                     type: string
+ *                  photo:
+ *                     type: string
  */
 comment.get('/tweets/:id/comments',
     validate([param('id').isInt({ min: 1 })]),
@@ -152,6 +158,8 @@ comment.get('/tweets/:id/comments',
 *                     type: integer
 *                  text:
 *                     type: string
+*                  photo:
+*                     type: string
 */
 comment.get('/users/:id/comments',
     validate([param('id').isInt({ min: 1 })]),
@@ -188,6 +196,8 @@ comment.get('/users/:id/comments',
  *           properties: 
  *                  text:
  *                     type: string
+ *                  photo:
+ *                     type: string
  *     security:
  *      - bearerAuth: [] 
  *     responses:
@@ -206,6 +216,8 @@ comment.get('/users/:id/comments',
  *                     type: integer
  *                  text:
  *                     type: string
+ *                  photo:
+ *                     type: string
  *       404:
  *          description: Impossible to comment.
  *          content:
@@ -215,7 +227,8 @@ comment.get('/users/:id/comments',
  */
 comment.post('/tweets/:id/comments', authentication, validate([
     param('id').isInt({ min: 1 }),
-    body('text').isLength({ max: 500 })
+    body('text').isLength({ max: 500 }),
+    body('photo').isURL().optional({ nullable: true })
 ]),
     async (request, response) => {
         try {
@@ -250,6 +263,8 @@ comment.post('/tweets/:id/comments', authentication, validate([
  *           properties: 
  *                  text:
  *                     type: string
+ *                  photo:
+ *                     type: string
  *     security:
  *      - bearerAuth: [] 
  *     responses:
@@ -268,6 +283,8 @@ comment.post('/tweets/:id/comments', authentication, validate([
  *                     type: integer
  *                  text:
  *                     type: string
+ *                  photo:
+ *                     type: string
  *       404:
  *          description: Impossible to update the comment.
  *          content:
@@ -277,7 +294,8 @@ comment.post('/tweets/:id/comments', authentication, validate([
  */
 comment.put('/comments/:id', authentication, validate([
     param('id').isInt({ min: 1 }),
-    body('text').isLength({ max: 500 })
+    body('text').isLength({ max: 500 }),
+    body('photo').isURL().optional({ nullable: true })
 ]),
     async (request, response) => {
         let comment = await commentController.getComment(request.params.id);
@@ -287,6 +305,11 @@ comment.put('/comments/:id', authentication, validate([
                 newComment.text = request.body.text;
             } else {
                 newComment.text = comment.text;
+            }
+            if (request.body.photo) {
+                newTweet.photo = request.body.photo;
+            } else {
+                newTweet.photo = tweet.photo;
             }
             comment = await commentController.updateComment(newComment, request.params.id);
             response.json(comment);
@@ -326,6 +349,8 @@ comment.put('/comments/:id', authentication, validate([
  *                  tweet_id:
  *                     type: integer
  *                  text:
+ *                     type: string
+ *                  photo:
  *                     type: string
  *       404:
  *          description: Impossible to delete the comment.
