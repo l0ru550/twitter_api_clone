@@ -25,7 +25,6 @@ CREATE TABLE "tweet" (
   "user_id" int NOT NULL,
   "text" varchar NOT NULL,
   "photo" varchar,
-  "date" timestamp NOT NULL,
   "created_at" timestamp NOT NULL,
   "update_at" timestamp,
   "delete_at" timestamp
@@ -36,7 +35,7 @@ CREATE TABLE "comment" (
   "user_id" int NOT NULL,
   "tweet_id" int NOT NULL,
   "text" varchar NOT NULL,
-  "date" timestamp NOT NULL,
+  "photo" varchar,
   "created_at" timestamp NOT NULL,
   "update_at" timestamp,
   "delete_at" timestamp

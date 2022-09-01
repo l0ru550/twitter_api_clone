@@ -27,14 +27,14 @@ const getCommentsByUser = async (id) => {
 };
 
 const createComment = async (user_id, id, body) => {
-    const query = 'INSERT INTO comment (user_id, tweet_id, text, created_at) VALUES($1, $2, $3, now()) RETURNING *';
-    const res = await pool.query(query, [user_id, id, body.text]);
+    const query = 'INSERT INTO comment (user_id, tweet_id, text, photo, created_at) VALUES($1, $2, $3, $4, now()) RETURNING *';
+    const res = await pool.query(query, [user_id, id, body.text, body.photo]);
     return res.rows;
 };
 
 const updateComment = async (newComment, id) => {
-    const query = 'UPDATE comment SET text=$1, update_at=NOW() WHERE id=$2 RETURNING *';
-    const res = await pool.query(query, [newComment.text, id]);
+    const query = 'UPDATE comment SET text=$1, photo=$2 update_at=NOW() WHERE id=$3 RETURNING *';
+    const res = await pool.query(query, [newComment.text, newComment.photo, id]);
     return res.rows;
 };
 
