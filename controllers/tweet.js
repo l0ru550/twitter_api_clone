@@ -1,22 +1,37 @@
 const pool = require("../db");
-const jwt = require('jsonwebtoken');
+const { getCommentsByTweet } = require("./comment");
 
+const asyncForEach = async (array, callback) => {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+};
 
 const getTweets = async () => {
     const query = 'SELECT * FROM tweet WHERE delete_at is NULL';
     const res = await pool.query(query);
+    await asyncForEach(res.rows, async (tweet) => {
+        const commentsByTweet = await getCommentsByTweet(tweet.id);
+        tweet.comments = commentsByTweet;
+    });
     return res.rows;
 };
 
 const getTweet = async (id) => {
     const query = 'SELECT * FROM tweet WHERE id=$1 AND delete_at is NULL';
     const res = await pool.query(query, [id]);
+    const commentsByTweet = await getCommentsByTweet(id);
+    res.rows[0].comments = commentsByTweet;
     return res.rows;
 };
 
-const getTweetByUser = async (id) => {
+const getTweetsByUser = async (id) => {
     const query = 'SELECT * FROM tweet WHERE user_id=$1 AND delete_at is NULL';
     const res = await pool.query(query, [id]);
+    await asyncForEach(res.rows, async (tweet) => {
+        const commentsByTweet = await getCommentsByTweet(tweet.id);
+        tweet.comments = commentsByTweet;
+    });
     return res.rows;
 };
 
@@ -39,4 +54,4 @@ const deleteTweet = async (id) => {
 };
 
 
-module.exports = { getTweets, getTweet, getTweetByUser, createTweet, updateTweet, deleteTweet };
+module.exports = { getTweets, getTweet, getTweetsByUser, createTweet, updateTweet, deleteTweet };
